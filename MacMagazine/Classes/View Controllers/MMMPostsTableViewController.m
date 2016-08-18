@@ -118,7 +118,8 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     NSIndexPath *selectedIndexPath = self.tableView.indexPathForSelectedRow;
     if (selectedIndexPath) {
-        MMMPostDetailViewController *detailViewController = segue.destinationViewController;
+        UINavigationController *navigationController = segue.destinationViewController;
+        MMMPostDetailViewController *detailViewController = (MMMPostDetailViewController *) navigationController.topViewController;
         detailViewController.post = [self.fetchedResultsController objectAtIndexPath:selectedIndexPath];
     }
 
@@ -210,6 +211,12 @@
     return [MMMTableViewHeaderView height];
 }
 
+#pragma mark - UISplitViewDelegate delegate
+
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
+    return YES;
+}
+
 #pragma mark - NSFetchedResultsController delegate
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
@@ -220,6 +227,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.splitViewController.delegate = self;
+    self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applyRefreshControlFix)
